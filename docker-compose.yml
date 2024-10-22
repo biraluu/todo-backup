@@ -1,0 +1,39 @@
+version: '3'
+services:
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - todo-networks
+
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend:/usr/src/app
+    ports:
+      - "3000:3000"
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - todo-networks
+
+  db:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - todo-networks
+
+networks:
+  todo-networks:
